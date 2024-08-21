@@ -2,11 +2,19 @@ const express=require('express');
 
 const bodyParser=require('body-parser');
 
+const expressHbs=require('express-handlebars');
+
 const path=require('path');
 
 const app=express();
 
-app.set('view engine','pug');
+// app.set('view engine','pug');
+app.engine('hbs',expressHbs.engine({
+    layoutDir:'views/layouts/',
+    defaultLayout:'main-layout',
+    extname:'hbs'
+}))
+app.set('view engine','hbs');
 app.set('views','views')
 
 const adminData=require('./routes/admin');

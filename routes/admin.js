@@ -12,7 +12,14 @@ const products=[];
 router.get('/add-product',(req,res,next)=>{
     // res.sendFile(path.join(__dirname,'..','views','add-product.html'));
     // res.sendFile(path.join(rootDir,'views','add-product.html'));
-    res.render("add-product",{pageTitle:'Add Product',path:'/admin/add-product'});
+    // res.render("add-product",{pageTitle:'Add Product',path:'/admin/add-product'});// pug file , render method use default templating engine
+    res.render("add-product",{
+            pageTitle:'Add Product',
+            path:'/admin/add-product',
+            activeAddProduct:true,
+            productCSS:true,
+            formsCSS:true
+        });
 });
 
 
