@@ -10,6 +10,8 @@ const app=express();
 
 const errorController=require('./controllers/error');
 
+const db=require('./util/database');
+
 // app.set('view engine','pug');
 // app.engine('hbs',expressHbs.engine({
 //     layoutDir:'views/layouts/',
