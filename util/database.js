@@ -1,10 +1,7 @@
-const mysql=require('mysql2');
+const Sequelize= require('sequelize');
 
-const pool=mysql.createPool({
-    host:'localhost',
-    user:'root',
-    database:'node-complete',
-    password:'Viratkohli@18'
-});// pass object which contains details of the database , sql server is in local machine so host is local host
-
-module.exports=pool.promise();// promise for asynchronous tasks
+const sequelize=new Sequelize('node-complete','root','Viratkohli@18',{
+    dialect:'mysql',
+    host:'localhost'
+});
+module.exports=sequelize;

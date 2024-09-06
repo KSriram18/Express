@@ -15,13 +15,11 @@ main {
   margin: auto;
 }
 
-.details__image{
-  margin:auto;
-  width:37%;
+.image{
+  height:20rem;
 }
-.details__image img{
+.image img{
   height:100%;
-  width:100%;
 }
 
 form {
