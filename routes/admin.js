@@ -18,7 +18,7 @@ router.get('/products',adminController.getProducts);
 router.post('/add-product',adminController.postAddProduct);
 
 router.get('/edit-product/:productId',adminController.getEditProduct);
-// query parameters can be added by ? by using key value pairs with = between them separted by & , path is determined upto the question mark
+// // query parameters can be added by ? by using key value pairs with = between them separted by & , path is determined upto the question mark
 
 router.post('/edit-product',adminController.postEditProduct);
 

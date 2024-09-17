@@ -10,15 +10,9 @@ const app=express();
 
 const errorController=require('./controllers/error');
 
-const sequelize=require('./util/database');
-
-const Product=require('./models/product');
 const User=require('./models/user');
-const Cart=require('./models/cart');
-const CartItem=require('./models/cart-item');
-const Order=require('./models/order');
-const OrderItem=require('./models/order-item');
 
+const mongoConnect=require('./util/database').mongoConnect;
 
 
 // app.set('view engine','pug');
@@ -29,7 +23,16 @@ const OrderItem=require('./models/order-item');
 // }))
 // app.set('view engine','hbs');
 app.set('view engine','ejs');
-app.set('views','views')
+app.set('views','views');
+
+app.use((req,res,next)=>{
+    User.findById('66e77f443acea329a45e0b46')
+    .then(user=>{
+        req.user=new User(user.name,user.email,user.cart,user._id);
+        next();
+    })
+    .catch(err=>console.log(err));
+});
 
 const adminRoutes=require('./routes/admin');
 const shopRoutes=require('./routes/shop');
@@ -37,53 +40,11 @@ const shopRoutes=require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req,res,next)=>{
-    User.findByPk(1)
-    .then(user=>{
-        req.user=user;
-        next();
-    })
-    .catch(err=>console.log(err));
-})
- 
 app.use('/admin',adminRoutes); 
 app.use(shopRoutes); 
 
 app.use(errorController.get404);
 
-Product.belongsTo(User,{constraints:true,onDelete:'CASCADE'});
-User.hasMany(Product);
-Cart.belongsTo(User);// it is optional , inverse is not required
-User.hasOne(Cart);
-Cart.belongsToMany(Product,{through:CartItem});
-Product.belongsToMany(Cart,{through:CartItem});
-Order.belongsTo(User);// it is optional , inverse is not required
-User.hasMany(Order);
-Order.belongsToMany(Product,{through:OrderItem});
-Product.belongsToMany(Order,{through:OrderItem});
-
-
-sequelize.
-// sync({force:true})
-sync()
-.then(result=>{
-    return User.findByPk(1);
-})
-.then(user=>{
-    if(!user){
-        return User.create({name:'Max',email:'test@test.com'});
-    }
-    // return Promise.resolve(user);
-    return user;
-})
-.then(user=>{
-    // console.log(user);
-    user.createCart();
-})
-.then(cart=>{
+mongoConnect(()=>{
     app.listen(3500);
 })
-.catch(err=>{
-    console.log(err);
-}
-);
