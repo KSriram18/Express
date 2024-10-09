@@ -1,4 +1,3 @@
-const { OrderedBulkOperation } = require('mongodb');
 const Product=require('../models/product');
 // const Cart=require('../models/cart');
 const Order=require('../models/order');
@@ -13,7 +12,7 @@ exports.getProducts=(req,res,next)=>{
         res.render('shop/product-list',{
             prods:products,
             pageTitle:'All Products',
-            path:'/products',
+            path:'/products'
             // hasProducts:products.length>0,
             // activeShop:true,
             // productCSS:true,
@@ -30,7 +29,7 @@ exports.getProduct=(req,res,next)=>{
         res.render('shop/product-detail',{
             product:product,
             pageTitle:product.title,
-            path:'/products',
+            path:'/products'
         })
     })
     .catch(err=>console.log(err)); 
@@ -42,13 +41,16 @@ exports.getIndex=(req,res,next)=>{
         res.render('shop/index',{
             prods:products,
             pageTitle:'Shop',
-            path:'/',
+            path:'/'
+            // isAuthenticated: req.session.isLoggedIn,
+            // csrfToken:req.csrfToken()
         })
     })
     .catch(err=>console.log(err));
 };
 
 exports.getCart=(req,res,next)=>{
+    console.log(req.user);
     req.user.populate('cart.items.productId')
     .then(user=>{
         const products=user.cart.items;
@@ -107,7 +109,7 @@ exports.postOrder=(req,res,next)=>{
         })
         const order=new Order({
             user:{
-                name:req.user.name,
+                email:req.user.email,
                 userId:req.user
             },
             products:products

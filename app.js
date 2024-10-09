@@ -6,15 +6,33 @@ const bodyParser=require('body-parser');
 
 const path=require('path');
 
-const app=express();
-
 const mongoose = require('mongoose');
 
 const errorController=require('./controllers/error');
 
 const User=require('./models/user');
 
+const session=require('express-session'); 
 
+const csrf=require('csurf');
+
+// const cookieParser = require('cookie-parser');
+
+const flash=require('connect-flash');
+
+const MongoDBStore=require('connect-mongodb-session')(session);
+
+const csrfProtection=csrf();
+
+const app=express();
+
+
+const MongoDB_URI='mongodb://127.0.0.1:27017/shop';
+
+const store=new MongoDBStore({
+    uri:MongoDB_URI,
+    collection:'sessions'
+})
 // app.set('view engine','pug');
 // app.engine('hbs',expressHbs.engine({
 //     layoutDir:'views/layouts/',
@@ -25,39 +43,52 @@ const User=require('./models/user');
 app.set('view engine','ejs');
 app.set('views','views');
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+    secret:'my secret',
+    resave:false,
+    saveUninitialized:false,// here we can configuration of our cookie
+    store:store,
+}));
+
+// app.use(cookieParser());
+
+app.use(csrfProtection);
+app.use(flash());
+
 app.use((req,res,next)=>{
-    User.findById('66ead644e29a22ab00812056')
+    if(!req.session.user){
+        return next();
+    }
+    User.findById(req.session.user._id)
     .then(user=>{
-        req.user=user
+        req.user=user;
         next();
     })
     .catch(err=>console.log(err));
 });
 
+app.use((req,res,next)=>{
+    
+  res.locals.isAuthenticated=req.session.isLoggedIn;
+  res.locals.csrfToken=req.csrfToken();
+  next();
+});
+
 const adminRoutes=require('./routes/admin');
 const shopRoutes=require('./routes/shop');
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+const authRoutes=require('./routes/auth');
 
 app.use('/admin',adminRoutes); 
 app.use(shopRoutes); 
+app.use(authRoutes); 
 
 app.use(errorController.get404);
 
-mongoose.connect("mongodb://127.0.0.1:27017/shop")
+mongoose.connect(MongoDB_URI)
 .then(result=>{
-    User.findOne().
-    then(user=>{
-        if(!user){
-            const user=new User({
-                name:'Max',
-                email:'Max@test.com',
-                cart:{items:[]}
-            });
-         user.save()
-        }
-    });
-    app.listen(3500)
+    app.listen(3500);
 })
 .catch(err=> console.log(err));

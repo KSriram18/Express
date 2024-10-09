@@ -11,6 +11,8 @@
         </div>
         <h2><%= product.price %></h2>
         <p><%= product.description %></p>
-        <%- include ('../includes/add-to-cart.ejs') %><!-- no need to pass object here because it is not a loop-->
+        <% if(isAuthenticated) {%>
+            <%- include ('../includes/add-to-cart.ejs',{product:product}) %><!-- no need to pass object here because it is not a loop-->
+        <% } %>
     </main>
 <%- include('../includes/end.ejs') %>

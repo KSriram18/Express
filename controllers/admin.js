@@ -4,7 +4,10 @@ exports.getAddProduct=(req,res,next)=>{
     // res.sendFile(path.join(__dirname,'..','views','add-product.html'));
     // res.sendFile(path.join(rootDir,'views','add-product.html'));
     // res.render("add-product",{pageTitle:'Add Product',path:'/admin/add-product'});// pug file , render method use default templating engine
-        res.render("admin/edit-product",{
+    //    if(!req.session.isLoggedIn){
+    //         return res.redirect('/login');
+    //    } 
+    res.render("admin/edit-product",{
             pageTitle:'Add Product',
             path:'/admin/add-product',
             editing: false
@@ -46,7 +49,8 @@ exports.getEditProduct=(req,res,next)=>{
             pageTitle:'Edit Product',
             path:'/admin/edit-product',
             editing:editMode,
-            product:product
+            product:product,
+            isAuthenticated: req.session.isLoggedIn
         });
     })
     .catch(err=>console.log(err)); 
@@ -81,7 +85,7 @@ exports.getProducts=(req,res,next)=>{
         res.render('admin/products',{
             prods:products,
             pageTitle:'Admin Products',
-            path:'/admin/products',
+            path:'/admin/products'
         });
     })
     .catch(err=>console.log(err));
